@@ -49,7 +49,7 @@ jobs:
             -v $HOME/.docker/config.json:/kaniko/.docker/config.json:ro \
             gcr.io/kaniko-project/executor:latest \
             --context dir:///workspace \
-            --dockerfile dir:///workspace/Dockerfile \
+            --dockerfile /workspace/Dockerfile \
             --destination $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG \
             --custom-platform linux/arm64 \
             --cache=true
