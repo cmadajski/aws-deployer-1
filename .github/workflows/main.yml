@@ -9,6 +9,7 @@ env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: "aws-deployer-1"
   IAM_ROLE_ARN: "arn:aws:iam::753520288508:role/aws-deployer-1"
+  TERRAFORM_VERSION: "1.15.8"
   TERRAFORM_DIR: "./terraform"
 
 # Permissions are required for OIDC authentication with AWS
