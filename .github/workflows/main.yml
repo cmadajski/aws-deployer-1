@@ -55,12 +55,12 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
-          working-directory: ${{ TERRAFORM_DIR }}
+        working-directory: ${{ TERRAFORM_DIR }}
 
       - name: Terraform Plan
         run: terraform plan -var="image_tag=${{ github.sha }}" -out=tfplan
-          working-directory: ${{ TERRAFORM_DIR }}
+        working-directory: ${{ TERRAFORM_DIR }}
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
-          working-directory: ${{ TERRAFORM_DIR }}
+        working-directory: ${{ TERRAFORM_DIR }}
