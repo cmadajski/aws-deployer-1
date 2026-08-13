@@ -4,6 +4,15 @@ on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform (deploy or destroy)'
+        type: choice
+        required: true
+        default: 'deploy'
+        options:
+          - deploy
+          - destroy
 
 env:
   AWS_REGION: us-east-1
@@ -19,6 +28,7 @@ permissions:
 
 jobs:
   deploy:
+    if: github.event_name == 'push' || inputs.action == 'deploy'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -64,4 +74,30 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
+        working-directory: ${{ env.TERRAFORM_DIR }}
+
+  destroy:
+    if: github.event_name == 'workflow_dispatch' && inputs.action == 'destroy'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.IAM_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ${{ env.TERRAFORM_DIR }}
+
+      - name: Terraform Destroy
+        run: terraform destroy -var="image_tag=${{ github.sha }}" -auto-approve
         working-directory: ${{ env.TERRAFORM_DIR }}
